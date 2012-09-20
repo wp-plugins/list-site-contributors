@@ -38,7 +38,7 @@ The only option now is yes/no for showing the web link url for each author/contr
 
 = I have a problem with your plugin or would like to suggest a change / new feature. How? =
 
-Try the wordpress plugin forum first. If that fails then email me from the contact form on my mallsop.com website.
+Try the wordpress plugin forum first. If that fails then email me from the contact form on my mallsop dot com website.
 
 == Upgrade Notice ==
 
