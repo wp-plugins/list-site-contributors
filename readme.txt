@@ -5,7 +5,8 @@ Tags: contributors, authors, plugins
 Requires at least: 3.1
 Tested up to: 3.4
 Stable tag: trunk
-License: GPLv2
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 List site contributors (and authors). 
 
@@ -45,7 +46,8 @@ None.
 
 == Screenshots ==
 
-See screenshots in the repository or zip file.
+list-site-contributors-screenshot.png
+list-site-contributors-screenshot-2.png
 
 == Changelog ==
 
