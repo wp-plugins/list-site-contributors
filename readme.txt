@@ -11,7 +11,7 @@ List site contributors (and authors).
 
 == Description ==
 
-List site contributors allows you list your site's contributors. (http://www.mallsop.com/plugins)
+List site contributors allows you list your site's contributors. 
 Just add the shortcode [listsitecontributors] to a page on your blog. 
 Optionally you can use the User Photo Plugin (http://wordpress.org/extend/plugins/user-photo/) for images,  
 otherwise Avatars will be used.
