@@ -34,7 +34,7 @@ This will use the User Photo Plugin image, if installed. Otherwise the Wordpress
 
 = Where are the options? =
 
-The only option now is yes/no for showing the web link url for each author/contributor.
+The only option now is yes/no for to show the web link url for the listed authors/contributors.
 
 = I have a problem with your plugin or would like to suggest a change / new feature. How? =
 
