@@ -34,11 +34,11 @@ This will use the User Photo Plugin image, if installed. Otherwise the Wordpress
 
 = Where are the options? =
 
-The only option now is yes/no for to show the web link url for the listed authors/contributors.
+The only option now is yes/no for showing the web link url for the listed authors/contributors.
 
 = I have a problem with your plugin or would like to suggest a change / new feature. How? =
 
-Try the wordpress plugin forum first. If that fails then email me from the contact form on my mallsop dot com website.
+Try the wordpress plugin forum first. If that fails then email me using my contact form on my website.
 
 == Upgrade Notice ==
 
