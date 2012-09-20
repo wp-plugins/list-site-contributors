@@ -46,9 +46,9 @@ None.
 
 == Screenshots ==
 
-screenshot-1.png
+screenshot-1.jpg
 
-screenshot-2.png
+screenshot-2.jpg
 
 == Changelog ==
 
