@@ -46,8 +46,9 @@ None.
 
 == Screenshots ==
 
-/assets/screenshot-1.png
-/assets/screenshot-2.png
+screenshot-1.png
+
+screenshot-2.png
 
 == Changelog ==
 
