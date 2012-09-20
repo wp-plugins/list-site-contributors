@@ -46,8 +46,8 @@ None.
 
 == Screenshots ==
 
-list-site-contributors-screenshot.png
-list-site-contributors-screenshot-2.png
+/assets/screenshot-1.png
+/assets/screenshot-2.png
 
 == Changelog ==
 
