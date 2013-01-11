@@ -61,8 +61,7 @@ None.
 * First version: Tested ok. Fix for use with Relevanssi plugin.
 = 1.1.0 =
 * Added option: Added option to specify the number of characters in the search results description. 
-= 1.1.1 =
-* Minor fix: Max characters get. 
+
 
 
 
