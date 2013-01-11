@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.0
+Version: 1.1.1
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -106,12 +106,14 @@ function list_site_contributors_sub_page() {
 	else {	
 		$opt  = get_option('lsctrib');
 		$lsc_show_user_url = $opt['lsc_show_user_url'];	
-		//$message .= "Get option= ".$lsc_show_user_url;		
-		$lsc_show_user_desc_max_chars  = get_option('lsctribmax'); // 1-10-2013				
-		//$message .= " Get option= ".$lsc_show_user_desc_max_chars; // 01-10-2013
-		if ($lsc_show_user_desc_max_chars < 1) {
+		//$message .= "Get option url= ".$lsc_show_user_url;	
+			
+		$opt = get_option('lsctribmax'); // 1-10-2013				
+		$lsc_show_user_desc_max_chars  = $opt; // 1-10-2013	
+		//$message .= " Get option max= ".$lsc_show_user_desc_max_chars; // 01-10-2013
+		if (!is_numeric($lsc_show_user_desc_max_chars)) {
 			$lsc_show_user_desc_max_chars = 150;
-			}		
+			}
 		}	
 	
 	// show page
