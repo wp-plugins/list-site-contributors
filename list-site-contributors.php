@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.0
+Version: 1.1.1
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
