@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.0.0
+Version: 1.1.0
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -55,6 +55,8 @@ add_shortcode( 'listsitecontributors', 'list_site_contributors_display' );
 $opt = array();
 $opt['lsc_show_user_url'] = 0;
 add_option("lsctrib", $opt);
+$opt['lsc_show_user_desc_max_chars'] = 150; // 01-10-2013
+add_option("lsctribmax", $opt); // 01-10-2013
 
 // Add admin menus
 function list_site_contributors() {
@@ -78,8 +80,9 @@ function list_site_contributors_main_page() {
 // options - yeah i did it my way.
 function list_site_contributors_sub_page() { 
 	global $wpdb;
-  $lsctrib_table   = $wpdb->prefix . "lsctrib";  
+  // ? 01-10-2013 $lsctrib_table   = $wpdb->prefix . "lsctrib";  
   if(!isset($wpdb->lsctrib)){ $wpdb->lsctrib = $wpdb->prefix . 'lsctrib'; }
+  if(!isset($wpdb->lsctribmax)){ $wpdb->lsctribmax = $wpdb->prefix . 'lsctribmax'; } // 1-10-2013
 	//echo 'No other options.';
 	
 	$message = " ";
@@ -90,12 +93,25 @@ function list_site_contributors_sub_page() {
 	if ( isset($_POST['lsc_save']) ) {
 		$lsc_show_user_url = ( isset($_POST['lsc_show_user_url']) ) ? 1 : 0;				
 		update_option('lsctrib', $lsc_show_user_url);
+		// 01-10-2013 lsc_show_user_desc_max_chars added
+		$lsc_show_user_desc_max_chars = (isset($_POST['lsc_show_user_desc_max_chars']) ) ? $_POST['lsc_show_user_desc_max_chars'] : 150;
+		if (!is_numeric($lsc_show_user_desc_max_chars)) {
+			$lsc_show_user_desc_max_chars = 150;
+			}
+		//$message .= "debug max desc chars=[".$lsc_show_user_desc_max_chars."] ";
+		update_option('lsctribmax', $lsc_show_user_desc_max_chars);		
+		
 		$message = "Saved.";
 		}
 	else {	
 		$opt  = get_option('lsctrib');
 		$lsc_show_user_url = $opt['lsc_show_user_url'];	
-		//$message .= "Get option= ".$lsc_show_user_url;
+		//$message .= "Get option= ".$lsc_show_user_url;		
+		$lsc_show_user_desc_max_chars  = get_option('lsctribmax'); // 1-10-2013				
+		//$message .= " Get option= ".$lsc_show_user_desc_max_chars; // 01-10-2013
+		if ($lsc_show_user_desc_max_chars < 1) {
+			$lsc_show_user_desc_max_chars = 150;
+			}		
 		}	
 	
 	// show page
@@ -110,6 +126,11 @@ function list_site_contributors_sub_page() {
  	echo "<td><input name=\"lsc_show_user_url\" id=\"lsc_show_user_url\" type=\"checkbox\"";
  	if ($lsc_show_user_url==1) { echo 'checked="checked"'; }
  	echo " /></td>\n";
+	echo "</tr>";
+	echo "<tr><th>Number of characters to show in the search results description?</th>\n";
+ 	echo "<td><input name=\"lsc_show_user_desc_max_chars\" id=\"lsc_show_user_desc_max_chars\" type=\"text\" value=\"";
+ 	echo $lsc_show_user_desc_max_chars."\" size=\"3\" maxlength=\"3\">";
+ 	echo "</td>\n";
 	echo "</tr>";
 	echo "</table>\n";
 	echo "<p class=\"submit\">\n";
@@ -174,8 +195,8 @@ function list_site_contributors_display() {
 					$content .= "</div><b>";
 					$content .= "".get_the_author_meta('display_name', $author_id);
 					$content .= "</b><br />\n";
-					$content .= "".get_the_author_meta('description', $author_id);
-			
+					$content .= "".get_the_author_meta('description', $author_id);								
+					
 					$opt  = get_option('lsctrib');
 					$lsc_show_user_url = $opt['lsc_show_user_url'];	
 					if ($lsc_show_user_url) {
@@ -282,6 +303,11 @@ function list_site_contributors_display() {
 				$query .= "AND wpmb.meta_key = 'last_name' AND wpmb.meta_value like '$searchletter%' ";	
 				$query .= "AND user_status = 0 "; // buddypress might use this - but old field
 				$query .= "ORDER BY wpmb.meta_value limit $page_start, $page_limit ";													
+
+				$lsc_show_user_desc_max_chars = get_option('lsctribmax'); // 01-13-2013				
+				if ($lsc_show_user_desc_max_chars < 1) { // 01-13-2013
+					$lsc_show_user_desc_max_chars = 150; // 01-13-2013
+					} // 01-13-2013
 								
 				//$save_display = "";
 				//$content .= "<!-- \n debug-lsc-query: ".$query. " -->\n";
@@ -319,10 +345,10 @@ function list_site_contributors_display() {
 									//$desc = the_author_meta('description', $author->ID);
 									if (trim(strlen($desc->meta_value) > 2)) {
 										if (!current_user_can('manage_options') && !isset($_GET['s'])) { // 09-04-2011 mallsop, 09-13-2011 s for search
-											$descx = strip_tags(substr($desc->meta_value, 0, 150));
+											$descx = strip_tags(substr($desc->meta_value, 0, $lsc_show_user_desc_max_chars)); // max 01-13-2012 was 150
 											}
 										else { // 9-4-2011 mallsop
-											// authority user - desc not limited for relevanssi shortcode expand option 
+											// authority user - desc not limited for relevanssi shortcode expand option (logout if admin)
 											$descx = strip_tags($desc->meta_value);
 											}
 										$descx = preg_replace('/[^\x0A\x20-\x7E]/','', $descx); 

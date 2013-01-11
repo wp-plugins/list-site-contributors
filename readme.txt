@@ -34,11 +34,17 @@ This will use the User Photo Plugin image, if installed. Otherwise the Wordpress
 
 = Where are the options? =
 
-The only option now is yes/no for showing the web link url for the listed authors/contributors.
+Option yes/no for showing the web link url for the listed authors/contributors.
+Option number of characters to limit the authors and contributors descriptions on the search results. Default is 150 chars.
+
+= Any other notes? =
+
+If you are logged in as admin, you will see the full descriptions of authors and contributors.
+This allows search plugins like Relevanssi to get all that information. Logout to see the normal user view. 
 
 = I have a problem with your plugin or would like to suggest a change / new feature. How? =
 
-Try the wordpress plugin forum first. If that fails then email me using my contact form on my website.
+Try the wordpress plugin forum first. Otherwise email me using my website contact form.
 
 == Upgrade Notice ==
 
@@ -53,5 +59,8 @@ None.
 
 = 1.0.0 =
 * First version: Tested ok. Fix for use with Relevanssi plugin.
+= 1.1.0 =
+* Second version: Added option to specify the number of characters in the search results description. 
+
 
 
