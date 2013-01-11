@@ -71,7 +71,7 @@ function list_site_contributors_main_page() {
 	echo '<h2>List Site Contributors</h2>';
 	echo '<p>Shortcode: &#91;listsitecontributors&#93; - Place this in a page.</p>'; //  - Optional: User Photo Plugin.
 	echo '<p>Displays a listing of active authors and contributors with images with an A-Z directory and last name search.</p>';
-	echo '<p>See the options tab to set options.</p>';
+	echo '<p>See the options tab to set any options.</p>';
 	echo '<p>More information at: <a href="http://www.mallsop.com/plugins">mallsop.com</a></p>';
 	echo '<p>Visit http://codex.wordpress.org/Roles_and_Capabilities for role information.</p>';
 	echo '</div>';
