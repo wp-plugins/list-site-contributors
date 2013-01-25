@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.1
+Version: 1.1.2
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -57,6 +57,8 @@ $opt['lsc_show_user_url'] = 0;
 add_option("lsctrib", $opt);
 $opt['lsc_show_user_desc_max_chars'] = 150; // 01-10-2013
 add_option("lsctribmax", $opt); // 01-10-2013
+$opt['lsc_show_user_all_roles'] = 0; // 01-24-2013
+add_option("lsctriball", $opt); // 01-24-2013
 
 // Add admin menus
 function list_site_contributors() {
@@ -70,8 +72,8 @@ function list_site_contributors_main_page() {
 	echo '<div class="wrap">';
 	echo '<h2>List Site Contributors</h2>';
 	echo '<p>Shortcode: &#91;listsitecontributors&#93; - Place this in a page.</p>'; //  - Optional: User Photo Plugin.
-	echo '<p>Displays a listing of active authors and contributors with images with an A-Z directory and last name search.</p>';
-	echo '<p>See the options tab to set options.</p>';
+	echo '<p>Displays a listing of active authors and contributors with images. It has an A-Z directory and last name search.</p>';
+	echo '<p>See the Options below. Be sure to set the Biographical Info and Display Name for each user.</p>';
 	echo '<p>More information at: <a href="http://www.mallsop.com/plugins">mallsop.com</a></p>';
 	echo '<p>Visit http://codex.wordpress.org/Roles_and_Capabilities for role information.</p>';
 	echo '</div>';
@@ -82,7 +84,8 @@ function list_site_contributors_sub_page() {
 	global $wpdb;
   // ? 01-10-2013 $lsctrib_table   = $wpdb->prefix . "lsctrib";  
   if(!isset($wpdb->lsctrib)){ $wpdb->lsctrib = $wpdb->prefix . 'lsctrib'; }
-  if(!isset($wpdb->lsctribmax)){ $wpdb->lsctribmax = $wpdb->prefix . 'lsctribmax'; } // 1-10-2013
+  if(!isset($wpdb->lsctribmax)){ $wpdb->lsctribmax = $wpdb->prefix . 'lsctribmax'; } // 01-10-2013
+  if(!isset($wpdb->lsctriball)){ $wpdb->lsctriball = $wpdb->prefix . 'lsctriball'; } // 01-24-2013  
 	//echo 'No other options.';
 	
 	$message = " ";
@@ -91,8 +94,12 @@ function list_site_contributors_sub_page() {
 		
 	// save data
 	if ( isset($_POST['lsc_save']) ) {
-		$lsc_show_user_url = ( isset($_POST['lsc_show_user_url']) ) ? 1 : 0;				
+		$message = "Saved.";
+			
+		$lsc_show_user_url = ( isset($_POST['lsc_show_user_url']) ) ? 1 : 0;			
+		//$message .= "debug show user url=[".$lsc_show_user_url."] ";	
 		update_option('lsctrib', $lsc_show_user_url);
+		
 		// 01-10-2013 lsc_show_user_desc_max_chars added
 		$lsc_show_user_desc_max_chars = (isset($_POST['lsc_show_user_desc_max_chars']) ) ? $_POST['lsc_show_user_desc_max_chars'] : 150;
 		if (!is_numeric($lsc_show_user_desc_max_chars)) {
@@ -101,7 +108,10 @@ function list_site_contributors_sub_page() {
 		//$message .= "debug max desc chars=[".$lsc_show_user_desc_max_chars."] ";
 		update_option('lsctribmax', $lsc_show_user_desc_max_chars);		
 		
-		$message = "Saved.";
+		$lsc_show_user_all_roles = ( isset($_POST['lsc_show_user_all_roles']) ) ? 1 : 0; // 01-24-2013
+		//$message .= "debug show all roles=[".$lsc_show_user_all_roles."] ";
+		update_option('lsctriball', $lsc_show_user_all_roles); // 01-24-2013
+			
 		}
 	else {	
 		$opt  = get_option('lsctrib');
@@ -114,6 +124,10 @@ function list_site_contributors_sub_page() {
 		if (!is_numeric($lsc_show_user_desc_max_chars)) {
 			$lsc_show_user_desc_max_chars = 150;
 			}
+			
+		$opt  = get_option('lsctriball'); // 01-24-2013
+		$lsc_show_user_all_roles = $opt['lsc_show_user_all_roles'];	// 01-24-2013
+		//$message .= "Get option show all active roles except subscriber = ".$lsc_show_user_url;	
 		}	
 	
 	// show page
@@ -129,10 +143,15 @@ function list_site_contributors_sub_page() {
  	if ($lsc_show_user_url==1) { echo 'checked="checked"'; }
  	echo " /></td>\n";
 	echo "</tr>";
-	echo "<tr><th>Number of characters to show in the search results description?</th>\n";
+	echo "<tr><th>Number of characters to show in the search results description?</th>\n"; 
  	echo "<td><input name=\"lsc_show_user_desc_max_chars\" id=\"lsc_show_user_desc_max_chars\" type=\"text\" value=\"";
- 	echo $lsc_show_user_desc_max_chars."\" size=\"3\" maxlength=\"3\">";
+ 	echo $lsc_show_user_desc_max_chars."\" size=\"3\" maxlength=\"3\"> (Default is 150)";
  	echo "</td>\n";
+	echo "</tr>";
+	echo "<tr><th>Include editors and administrators?</th>\n"; 
+ 	echo "<td><input name=\"lsc_show_user_all_roles\" id=\"lsc_show_user_all_roles\" type=\"checkbox\"";
+ 	if ($lsc_show_user_all_roles==1) { echo 'checked="checked"'; } 	
+ 	echo " /></td>\n";
 	echo "</tr>";
 	echo "</table>\n";
 	echo "<p class=\"submit\">\n";
@@ -300,11 +319,18 @@ function list_site_contributors_display() {
 				$query .= "INNER JOIN $wpdb->usermeta as wpmb ON $wpdb->users.ID = wpmb.user_id ";
 				// avoids previous_contributor - if you have that role
 				$query .= "WHERE wpma.meta_key = '".$prefix."capabilities' ";
-				$query .= "AND (wpma.meta_value like '%author%' OR wpma.meta_value like '%contributor%') ";
+								
+				$lsc_show_user_all_roles = get_option('lsctriball'); // 01-24-2013				
+				if ($lsc_show_user_all_roles==1) { // 01-24-2013					
+					$query .= "AND (wpma.meta_value not like '%subscriber%') "; // 01-24-2013
+					}
+				else { // do not show editors and admins					
+					$query .= "AND (wpma.meta_value like '%author%' OR wpma.meta_value like '%contributor%') ";
+					}
 				$query .= "AND (wpma.meta_value not like '%previous_contributor%') "; // wpma.meta_value not like '%previous_author%' AND 
 				$query .= "AND wpmb.meta_key = 'last_name' AND wpmb.meta_value like '$searchletter%' ";	
 				$query .= "AND user_status = 0 "; // buddypress might use this - but old field
-				$query .= "ORDER BY wpmb.meta_value limit $page_start, $page_limit ";													
+				$query .= "ORDER BY wpmb.meta_value limit $page_start, $page_limit ";											
 
 				$lsc_show_user_desc_max_chars = get_option('lsctribmax'); // 01-13-2013				
 				if ($lsc_show_user_desc_max_chars < 1) { // 01-13-2013
@@ -312,7 +338,7 @@ function list_site_contributors_display() {
 					} // 01-13-2013
 								
 				//$save_display = "";
-				//$content .= "<!-- \n debug-lsc-query: ".$query. " -->\n";
+				//$content .= "<!-- \n debug-lsc-query: ".$query. " [".$lsc_show_user_all_roles."] -->\n";
 				// do query
 				$authors = $wpdb->get_results($query);
 				if ($authors) {

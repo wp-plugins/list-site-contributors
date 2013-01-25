@@ -23,6 +23,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Delete options from DB
 delete_option( 'lsctrib' );
 delete_option( 'lsctribmax' ); // 01-10-2013
+delete_option( 'lsctriball' ); // 01-24-2013
 
 
 

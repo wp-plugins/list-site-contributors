@@ -4,7 +4,7 @@ Donate link: http://www.mallsop.com/downloads.html
 Tags: contributors, authors, plugins
 Requires at least: 3.1
 Tested up to: 3.4
-Stable tag: 1.1.1
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,8 +62,7 @@ None.
 = 1.1.0 =
 * Added option: Added option to specify the number of characters in the search results description. 
 = 1.1.1 =
-* Fixed option: Fixed option 1.1.1 setting. 
-
-
-
+* Minor fix: Max characters get error fix. 
+= 1.1.2 =
+* Added option: Include editors and admins (all active user roles except subscribers).
 
