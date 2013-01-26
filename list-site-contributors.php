@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.2
+Version: 1.1.3
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -221,18 +221,32 @@ function list_site_contributors_display() {
 					$opt  = get_option('lsctrib');
 					$lsc_show_user_url = $opt['lsc_show_user_url'];	
 					if ($lsc_show_user_url) {
-						$content .= "<br /><b>Website:</b> <a href=\"";
-						$content .= "".get_the_author_meta('user_url', $author_id);					
-						$content .= "/\" target='_blank'>";
-						$content .= "".get_the_author_meta('user_url', $author_id);
-						$content .= "</a>";
+						$user_url = get_the_author_meta('user_url', $author_id);
+						if (trim($user_url) != "") { // 01-25-2013
+							$content .= "<br /><b>Website:</b> <a href=\"";
+							$content .= $user_url;					
+							$content .= "/\" target='_blank'>";
+							$content .= $user_url;
+							$content .= "</a>";
+							}
+						else { // 01-24-2013
+							$content .= "<br /><b>Website:</b> Not listed.";
+							}
 						}
-					$content .= "<br /><b>Read:</b><a href=\"".get_bloginfo('url')."/author/";
-					$content .= "".get_the_author_meta('user_nicename', $author_id);
-					//$content .= $author->user_nicename;
-					$content .= "/\">&nbsp;";
-					$content .= "".get_the_author_meta('display_name', $author_id);
-					$content .= "`s articles</a>";
+					$num_posts = count_user_posts( $author_id );	// 01-25-2013
+					if ($num_posts > 0) {
+						$content .= "<br /><b>Read:</b><a href=\"".get_bloginfo('url')."/author/";
+						$content .= "".get_the_author_meta('user_nicename', $author_id);
+						//$content .= $author->user_nicename;
+						$content .= "/\">&nbsp;";
+						$content .= "".get_the_author_meta('display_name', $author_id);
+						$content .= "`s articles</a>";
+						}					
+					else { // 01-25-2013
+						$content .= "<br />";
+						$content .= "".get_the_author_meta('display_name', $author_id);
+						$content .= " has not posted any articles.";
+						}
 					$content .= "</div>\n";
 					// etc.
 					}
