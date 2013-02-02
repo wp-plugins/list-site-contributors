@@ -67,3 +67,5 @@ None.
 * Added option: Include editors and admins (all active user roles except subscribers).
 = 1.1.3 =
 * Modification: Do not show a link to user posts if no posts found. Show `Not listed` if user has no website link.
+= 1.1.4 =
+* Modification: Option to suppress authors and contributors with zero posts.

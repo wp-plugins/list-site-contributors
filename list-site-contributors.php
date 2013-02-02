@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.3
+Version: 1.1.4
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -111,6 +111,10 @@ function list_site_contributors_sub_page() {
 		$lsc_show_user_all_roles = ( isset($_POST['lsc_show_user_all_roles']) ) ? 1 : 0; // 01-24-2013
 		//$message .= "debug show all roles=[".$lsc_show_user_all_roles."] ";
 		update_option('lsctriball', $lsc_show_user_all_roles); // 01-24-2013
+		
+		$lsc_suppress_users_zero_posts = ( isset($_POST['lsc_suppress_users_zero_posts']) ) ? 1 : 0; // 01-31-2013
+		//$message .= "debug suppress author or contributor with zero posts=[".$lsc_suppress_users_zero_posts."] ";
+		update_option('lsctribsupp', $lsc_suppress_users_zero_posts); // 01-31-2013
 			
 		}
 	else {	
@@ -125,9 +129,14 @@ function list_site_contributors_sub_page() {
 			$lsc_show_user_desc_max_chars = 150;
 			}
 			
-		$opt  = get_option('lsctriball'); // 01-24-2013
+		$opt = get_option('lsctriball'); // 01-24-2013
 		$lsc_show_user_all_roles = $opt['lsc_show_user_all_roles'];	// 01-24-2013
 		//$message .= "Get option show all active roles except subscriber = ".$lsc_show_user_url;	
+		
+		$opt = get_option('lsctribsupp'); // 01-31-2013
+		$lsc_suppress_users_zero_posts = $opt['lsc_suppress_users_zero_posts'];	// 01-31-2013
+		//$message .= "Get option suppress author or contributor with zero posts = ".$lsc_suppress_users_zero_posts;	
+		
 		}	
 	
 	// show page
@@ -151,6 +160,11 @@ function list_site_contributors_sub_page() {
 	echo "<tr><th>Include editors and administrators?</th>\n"; 
  	echo "<td><input name=\"lsc_show_user_all_roles\" id=\"lsc_show_user_all_roles\" type=\"checkbox\"";
  	if ($lsc_show_user_all_roles==1) { echo 'checked="checked"'; } 	
+ 	echo " /></td>\n";
+	echo "</tr>";
+	echo "<tr><th>Suppress author/contributor with zero posts?</th>\n"; 
+ 	echo "<td><input name=\"lsc_suppress_users_zero_posts\" id=\"lsc_suppress_users_zero_posts\" type=\"checkbox\"";
+ 	if ($lsc_suppress_users_zero_posts==1) { echo 'checked="checked"'; } 	
  	echo " /></td>\n";
 	echo "</tr>";
 	echo "</table>\n";
@@ -358,56 +372,66 @@ function list_site_contributors_display() {
 				if ($authors) {
 					foreach ($authors as $author) {	
 					   if ($count_authors < $page_show) {
-							$content .= "<div id=\"authorinfo\">";
-							$content .= "<div id=\"authorpicthumb\">\n";
-							$author_id = $author->ID;						   	
-							if ($plugin_found > 0) {
-								$content .= "".userphoto_thumbnail($author_id); // user photo thumbnail 
-								}
-							else {
-								$content .= "".get_avatar( $author_id, $size = '40', $default = '' ); 
-							}
-							$content .= "</div>";	
-							$content .= "<a href=\"".$mypage."?aid=";
-							$content .= $author->ID;					
-							$content .= "\"><b>";
-							$content .= $author->display_name;								
-							$content .= "</b></a>&nbsp;"; 
-							// need more time...sigh.
-							$query = "SELECT meta_key, meta_value ";
-							$query .= " from $wpdb->usermeta ";
-							$query .= " WHERE user_id = ".$author->ID." ";
-							$query .= " AND meta_key = 'description' ";
-							$query .= " limit 0, 1 "; // only 1 desc 
-							$author_desc = $wpdb->get_results($query);
-							// debug
-							// $content .= $query;	
-							// $desc = the_author_meta('description', $author->ID);
-							foreach ($author_desc as $desc) {
-									//$desc = the_author_meta('description', $author->ID);
-									if (trim(strlen($desc->meta_value) > 2)) {
-										if (!current_user_can('manage_options') && !isset($_GET['s'])) { // 09-04-2011 mallsop, 09-13-2011 s for search
-											$descx = strip_tags(substr($desc->meta_value, 0, $lsc_show_user_desc_max_chars)); // max 01-13-2012 was 150
-											}
-										else { // 9-4-2011 mallsop
-											// authority user - desc not limited for relevanssi shortcode expand option (logout if admin)
-											$descx = strip_tags($desc->meta_value);
-											}
-										$descx = preg_replace('/[^\x0A\x20-\x7E]/','', $descx); 
-										$content .= $descx;
-										}
-									else { // default msg
-										$content .= "Author";
-										}
+					   	$author_id = $author->ID;					
+					   	$num_posts = count_user_posts( $author_id );	// 01-31-2013
+					    $lsc_suppress_users_zero_posts = get_option('lsctribsupp'); // 01-13-2013		
+					    $okshow = 1;	// 01-31-2013 default yes
+						  if ($lsc_suppress_users_zero_posts > 0) { // 01-31-2013
+						  	if ($num_posts < 1) { $okshow = 0; }
+						  	}					   	
+					   	if ($okshow) { // 01-31-2013
+								$content .= "<div id=\"authorinfo\">";
+								$content .= "<div id=\"authorpicthumb\">\n";								   	
+								if ($plugin_found > 0) {
+									$content .= "".userphoto_thumbnail($author_id); // user photo thumbnail 
 									}
-							$content .= "&nbsp;<a href=\"".$mypage."?aid=";
-							$content .= $author->ID;					
-							$content .= "\">";
-							$content .= "...&nbsp;More&nbsp;&gt;";
-							$content .= "</a> "; // $count_authors 
-							$content .= "</div><br />&nbsp;<br />\n";					
+								else {
+									$content .= "".get_avatar( $author_id, $size = '40', $default = '' ); 
+								}
+								$content .= "</div>";	
+								$content .= "<a href=\"".$mypage."?aid=";
+								$content .= $author->ID;					
+								$content .= "\"><b>";
+								$content .= $author->display_name;								
+								$content .= "</b></a>&nbsp;"; 
+								// need more time...sigh.
+								$query = "SELECT meta_key, meta_value ";
+								$query .= " from $wpdb->usermeta ";
+								$query .= " WHERE user_id = ".$author->ID." ";
+								$query .= " AND meta_key = 'description' ";
+								$query .= " limit 0, 1 "; // only 1 desc 
+								$author_desc = $wpdb->get_results($query);
+								// debug
+								// $content .= $query;	
+								// $desc = the_author_meta('description', $author->ID);
+								foreach ($author_desc as $desc) {
+										//$desc = the_author_meta('description', $author->ID);
+										if (trim(strlen($desc->meta_value) > 2)) {
+											if (!current_user_can('manage_options') && !isset($_GET['s'])) { // 09-04-2011 mallsop, 09-13-2011 s for search
+												$descx = strip_tags(substr($desc->meta_value, 0, $lsc_show_user_desc_max_chars)); // max 01-13-2012 was 150
+												}
+											else { // 9-4-2011 mallsop
+												// authority user - desc not limited for relevanssi shortcode expand option (logout if admin)
+												$descx = strip_tags($desc->meta_value);
+												}
+											$descx = preg_replace('/[^\x0A\x20-\x7E]/','', $descx); 
+											$content .= $descx;
+											}
+										else { // default msg
+											$content .= "Author";
+											}
+										}
+								$content .= "&nbsp;<a href=\"".$mypage."?aid=";
+								$content .= $author->ID;					
+								$content .= "\">";
+								$content .= "...&nbsp;More&nbsp;&gt;";
+								$content .= "</a> "; // $count_authors 
+								$content .= "</div><br />&nbsp;<br />\n";	
+								}	// end okshow
 							}
-						$count_authors++;									
+						if ($okshow) {	// 01-31-2013
+							$count_authors++;									
+							}
 						} // end loop
 					} // end authors found
 					$content .= "<br />\n";
