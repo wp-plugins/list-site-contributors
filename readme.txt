@@ -41,10 +41,12 @@ Option number of characters to limit the authors and contributors descriptions o
 
 If you are logged in as admin, you will see the full descriptions of authors and contributors.
 This allows search plugins like Relevanssi to get all that information. Logout to see the normal user view. 
+Also note that some security plugins can break this plugin due to author id removal.
+And remember to backup any style sheet changes you make, before upgrading this plugin.
 
 = I have a problem with your plugin or would like to suggest a change / new feature. How? =
 
-Try the wordpress plugin forum first. Otherwise email me using my website contact form.
+Try the wordpress plugin forum first. Otherwise email me using my mallsop dot com contact form.
 
 == Upgrade Notice ==
 
@@ -69,3 +71,5 @@ None.
 * Modification: Do not show a link to user posts if no posts found. Show `Not listed` if user has no website link.
 = 1.1.4 =
 * Modification: Option to suppress authors and contributors with zero posts.
+= 1.1.5 =
+* Modification: Cleanup options php illegal type warnings.

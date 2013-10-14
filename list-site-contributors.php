@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.4
+Version: 1.1.5
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -74,6 +74,7 @@ function list_site_contributors_main_page() {
 	echo '<p>Shortcode: &#91;listsitecontributors&#93; - Place this in a page.</p>'; //  - Optional: User Photo Plugin.
 	echo '<p>Displays a listing of active authors and contributors with images. It has an A-Z directory and last name search.</p>';
 	echo '<p>See the Options below. Be sure to set the Biographical Info and Display Name for each user.</p>';
+	echo '<p>Remember to logout to see the normal user view and paged data. See the readme.txt.</p>'; // 10-14-2013
 	echo '<p>More information at: <a href="http://www.mallsop.com/plugins">mallsop.com</a></p>';
 	echo '<p>Visit http://codex.wordpress.org/Roles_and_Capabilities for role information.</p>';
 	echo '</div>';
@@ -119,30 +120,53 @@ function list_site_contributors_sub_page() {
 		}
 	else {	
 		$opt  = get_option('lsctrib');
-		$lsc_show_user_url = $opt['lsc_show_user_url'];	
-		//$message .= "Get option url= ".$lsc_show_user_url;	
-			
-		$opt = get_option('lsctribmax'); // 1-10-2013				
-		$lsc_show_user_desc_max_chars  = $opt; // 1-10-2013	
-		//$message .= " Get option max= ".$lsc_show_user_desc_max_chars; // 01-10-2013
-		if (!is_numeric($lsc_show_user_desc_max_chars)) {
-			$lsc_show_user_desc_max_chars = 150;
+		if (isset($opt)) {	// 10-14-2013
+			$lsc_show_user_url = $opt;	
+			//$message .= "Get option url= ".$lsc_show_user_url.". ";	
+			}		
+		else { // 10-14-2013
+			//$message .= "Get option url NOT SET. ";	
+			$lsc_show_user_url = 1; // default yes
+			}		
+					
+		$opt = get_option('lsctribmax'); // 1-10-2013								
+		if (isset($opt)) { // 10-14-2013
+			$lsc_show_user_desc_max_chars  = $opt; // 1-10-2013					
+			//$message .= " Get option max chars= ".$lsc_show_user_desc_max_chars.". "; // 01-10-2013		
+			if (!is_numeric($lsc_show_user_desc_max_chars)) {
+				$lsc_show_user_desc_max_chars = 150;
+				}
 			}
-			
+		else { // 10-14-2013
+			//$message .= "Get option max chars NOT SET. ";	
+			$lsc_show_user_desc_max_chars = 150; // default show 150 chars 
+			}
+		
 		$opt = get_option('lsctriball'); // 01-24-2013
-		$lsc_show_user_all_roles = $opt['lsc_show_user_all_roles'];	// 01-24-2013
-		//$message .= "Get option show all active roles except subscriber = ".$lsc_show_user_url;	
+		if (isset($opt)) {	// 10-14-2013
+			$lsc_show_user_all_roles = $opt;	// 01-24-2013
+			//$message .= "Get option show all active roles except subscriber = ".$lsc_show_user_url.". ";	
+			}
+		else { // 10-14-2013
+			//$message .= "Get option show all active roles except subscriber NOT SET. ";	
+			$lsc_show_user_all_roles = 1; // default yes
+			}		
 		
 		$opt = get_option('lsctribsupp'); // 01-31-2013
-		$lsc_suppress_users_zero_posts = $opt['lsc_suppress_users_zero_posts'];	// 01-31-2013
-		//$message .= "Get option suppress author or contributor with zero posts = ".$lsc_suppress_users_zero_posts;	
-		
+		if (isset($opt)) {	// 10-14-2013
+			$lsc_suppress_users_zero_posts = $opt;	// 01-31-2013
+			//$message .= "Get option suppress author or contributor with zero posts = ".$lsc_suppress_users_zero_posts.". ";	
+			}
+		else { // 10-14-2013
+			//$message .= "Get option suppress author or contributor with zero posts NOT SET. ";	
+			$lsc_suppress_users_zero_posts = 0; // default no
+			}
 		}	
 	
 	// show page
 	echo "<div class=\"wrap\">";
-	echo "<h2>Options</h2>\n";
-	echo "<b>".$message."<b>\n";
+	echo "<h2>Options</h2>\n";	
+	echo "<div id='message' class='updated'>".$message."</div>\n"; // 10-14-2013
 	echo "<form method=\"post\" action=\"";
 	echo $_SERVER['REQUEST_URI'];
 	echo "\" id='lsctrib'>\n";
