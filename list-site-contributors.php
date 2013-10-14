@@ -257,7 +257,7 @@ function list_site_contributors_display() {
 					$content .= "".get_the_author_meta('description', $author_id);								
 					
 					$opt  = get_option('lsctrib');
-					$lsc_show_user_url = $opt['lsc_show_user_url'];	
+					$lsc_show_user_url = $opt;	// 10-14-2013 ['lsc_show_user_url']
 					if ($lsc_show_user_url) {
 						$user_url = get_the_author_meta('user_url', $author_id);
 						if (trim($user_url) != "") { // 01-25-2013
