@@ -3,7 +3,7 @@ Contributors: mallsop
 Donate link: http://www.mallsop.com/downloads.html
 Tags: contributors, authors, plugins
 Requires at least: 3.1
-Tested up to: 3.4
+Tested up to: 3.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -73,3 +73,5 @@ None.
 * Modification: Option to suppress authors and contributors with zero posts.
 = 1.1.5 =
 * Modification: Cleanup options php illegal type warnings.
+= 1.1.6 =
+* Modification: You can now exclude one user by entering the email of that user in the exclude option.

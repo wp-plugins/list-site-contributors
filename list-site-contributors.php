@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.5
+Version: 1.1.6
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -59,6 +59,8 @@ $opt['lsc_show_user_desc_max_chars'] = 150; // 01-10-2013
 add_option("lsctribmax", $opt); // 01-10-2013
 $opt['lsc_show_user_all_roles'] = 0; // 01-24-2013
 add_option("lsctriball", $opt); // 01-24-2013
+$opt['lsctribexc'] = ""; // 02-15-2014
+add_option("lsctribexc", $lsctribexc); // 02-15-2014
 
 // Add admin menus
 function list_site_contributors() {
@@ -116,6 +118,11 @@ function list_site_contributors_sub_page() {
 		$lsc_suppress_users_zero_posts = ( isset($_POST['lsc_suppress_users_zero_posts']) ) ? 1 : 0; // 01-31-2013
 		//$message .= "debug suppress author or contributor with zero posts=[".$lsc_suppress_users_zero_posts."] ";
 		update_option('lsctribsupp', $lsc_suppress_users_zero_posts); // 01-31-2013
+	
+		//$message .= "debug exclude users=[".$lsc_exclude_users."] ";	
+		$lsc_exclude_users = (isset($_POST['lsc_exclude_users']) ) ? $_POST['lsc_exclude_users'] : "Skip";
+		if (!preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/",$lsc_exclude_users)) { $lsc_exclude_users = "Skip"; } // 02-15-2014	
+		update_option('lsctribexc', $lsc_exclude_users);	// 02-15-2014
 			
 		}
 	else {	
@@ -128,7 +135,7 @@ function list_site_contributors_sub_page() {
 			//$message .= "Get option url NOT SET. ";	
 			$lsc_show_user_url = 1; // default yes
 			}		
-					
+				
 		$opt = get_option('lsctribmax'); // 1-10-2013								
 		if (isset($opt)) { // 10-14-2013
 			$lsc_show_user_desc_max_chars  = $opt; // 1-10-2013					
@@ -162,7 +169,12 @@ function list_site_contributors_sub_page() {
 			$lsc_suppress_users_zero_posts = 0; // default no
 			}
 		}	
-	
+						
+		$opt = get_option('lsctribexc'); // 02-15-2014				
+		if (isset($opt)) { // 02-15-2014			
+			$lsc_exclude_users  = $opt; // 02-15-2014						
+			}	
+			
 	// show page
 	echo "<div class=\"wrap\">";
 	echo "<h2>Options</h2>\n";	
@@ -190,6 +202,11 @@ function list_site_contributors_sub_page() {
  	echo "<td><input name=\"lsc_suppress_users_zero_posts\" id=\"lsc_suppress_users_zero_posts\" type=\"checkbox\"";
  	if ($lsc_suppress_users_zero_posts==1) { echo 'checked="checked"'; } 	
  	echo " /></td>\n";
+	echo "</tr>";
+	echo "<tr><th>Exclude the user with this email.</th>\n"; 
+ 	echo "<td><input name=\"lsc_exclude_users\" id=\"lsc_exclude_users\" type=\"text\" value=\"";
+ 	echo $lsc_exclude_users."\" size=\"50\" maxlength=\"255\"> Optional";
+ 	echo "</td>\n";
 	echo "</tr>";
 	echo "</table>\n";
 	echo "<p class=\"submit\">\n";
@@ -379,6 +396,12 @@ function list_site_contributors_display() {
 				else { // do not show editors and admins					
 					$query .= "AND (wpma.meta_value like '%author%' OR wpma.meta_value like '%contributor%') ";
 					}
+				
+				$lsctribexc = get_option('lsctribexc'); // 02-15-2014
+				if (trim($lsctribexc) != "") { 
+					$query .= "AND (user_email <> '".$lsctribexc."') "; // 02-15-2014
+					}
+					
 				$query .= "AND (wpma.meta_value not like '%previous_contributor%') "; // wpma.meta_value not like '%previous_author%' AND 
 				$query .= "AND wpmb.meta_key = 'last_name' AND wpmb.meta_value like '$searchletter%' ";	
 				$query .= "AND user_status = 0 "; // buddypress might use this - but old field
