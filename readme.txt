@@ -74,4 +74,4 @@ None.
 = 1.1.5 =
 * Modification: Cleanup options php illegal type warnings.
 = 1.1.6 =
-* Modification: You can now exclude one user by entering the email of that user in the exclude option.
+* Modification: You can now exclude one user by entering the user`s email.
