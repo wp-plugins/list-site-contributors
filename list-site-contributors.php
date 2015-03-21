@@ -276,6 +276,7 @@ function list_site_contributors_display() {
 			}
 
 		if (isset($_GET["aid"])) { // one record details by id
+			$lsc_add_line_breaks = get_option('lsctriblb'); // 03-21-2015
 			$content .= "<span id=\"authorlist\">\n";
 			$author_id = $_GET["aid"];
 			if (is_numeric($author_id)) { // safety
