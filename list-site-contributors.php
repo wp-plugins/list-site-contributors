@@ -3,7 +3,7 @@
 Plugin Name: List Site Contributors
 Plugin URI: http://www.mallsop.com/plugins
 Description: List site contributors and authors - Shortcode: [listsitecontributors].
-Version: 1.1.6
+Version: 1.1.7
 Author: mallsop 
 Author URI: http://www.mallsop.com
 License: GPL2
@@ -61,6 +61,8 @@ $opt['lsc_show_user_all_roles'] = 0; // 01-24-2013
 add_option("lsctriball", $opt); // 01-24-2013
 $opt['lsctribexc'] = ""; // 02-15-2014
 add_option("lsctribexc", $lsctribexc); // 02-15-2014
+$opt['lsc_add_line_breaks'] = 0; // 03-21-2015
+add_option("lsctriblb", $opt); // 03-21-2015
 
 // Add admin menus
 function list_site_contributors() {
@@ -77,8 +79,8 @@ function list_site_contributors_main_page() {
 	echo '<p>Displays a listing of active authors and contributors with images. It has an A-Z directory and last name search.</p>';
 	echo '<p>See the Options below. Be sure to set the Biographical Info and Display Name for each user.</p>';
 	echo '<p>Remember to logout to see the normal user view and paged data. See the readme.txt.</p>'; // 10-14-2013
-	echo '<p>More information at: <a href="http://www.mallsop.com/plugins">mallsop.com</a></p>';
-	echo '<p>Visit http://codex.wordpress.org/Roles_and_Capabilities for role information.</p>';
+	echo '<p>More <a href="http://wordpress.org/plugins/list-site-contributors/">plugin</a> information at: <a href="http://www.mallsop.com/plugins">mallsop.com</a></p>';
+	echo '<p>Visit <a href="http://codex.wordpress.org/Roles_and_Capabilities">this</a> link for role information.</p>';
 	echo '</div>';
 }
 
@@ -123,7 +125,11 @@ function list_site_contributors_sub_page() {
 		$lsc_exclude_users = (isset($_POST['lsc_exclude_users']) ) ? $_POST['lsc_exclude_users'] : "Skip";
 		if (!preg_match("/([\w\-]+\@[\w\-]+\.[\w\-]+)/",$lsc_exclude_users)) { $lsc_exclude_users = "Skip"; } // 02-15-2014	
 		update_option('lsctribexc', $lsc_exclude_users);	// 02-15-2014
-			
+		
+		$lsc_add_line_breaks = ( isset($_POST['lsc_add_line_breaks']) ) ? 1 : 0; // 03-21-2015
+		//$message .= "debug add user desc line breaks =[".$lsc_add_line_breaks."] ";
+		update_option('lsctriblb', $lsc_add_line_breaks); // 03-21-2015
+
 		}
 	else {	
 		$opt  = get_option('lsctrib');
@@ -174,6 +180,16 @@ function list_site_contributors_sub_page() {
 		if (isset($opt)) { // 02-15-2014			
 			$lsc_exclude_users  = $opt; // 02-15-2014						
 			}	
+		
+		$opt = get_option('lsctriblb'); // 03-21-2015
+		if (isset($opt)) {	// 10-14-2013
+			$lsc_add_line_breaks = $opt;	// 03-21-2015
+			//$message .= "Get option add line breaks to user desc  = ".$lsc_add_line_breaks.". ";	
+			}
+		else { // 10-14-2013
+			//$message .= "Get option add line breaks to user desc NOT SET. ";	
+			$lsc_add_line_breaks = 0; // default no
+			}			
 			
 	// show page
 	echo "<div class=\"wrap\">";
@@ -193,6 +209,12 @@ function list_site_contributors_sub_page() {
  	echo $lsc_show_user_desc_max_chars."\" size=\"3\" maxlength=\"3\"> (Default is 150)";
  	echo "</td>\n";
 	echo "</tr>";
+	echo "</tr>";
+	echo "<tr><th>Nice line breaks in the user description?</th>\n"; // 03-21-2015
+ 	echo "<td><input name=\"lsc_add_line_breaks\" id=\"lsc_add_line_breaks\" type=\"checkbox\"";
+ 	if ($lsc_add_line_breaks==1) { echo 'checked="checked"'; } 	
+ 	echo " /></td>\n";
+	echo "</tr>";	
 	echo "<tr><th>Include editors and administrators?</th>\n"; 
  	echo "<td><input name=\"lsc_show_user_all_roles\" id=\"lsc_show_user_all_roles\" type=\"checkbox\"";
  	if ($lsc_show_user_all_roles==1) { echo 'checked="checked"'; } 	
@@ -271,7 +293,12 @@ function list_site_contributors_display() {
 					$content .= "</div><b>";
 					$content .= "".get_the_author_meta('display_name', $author_id);
 					$content .= "</b><br />\n";
-					$content .= "".get_the_author_meta('description', $author_id);								
+					$descx = "".get_the_author_meta('description', $author_id);	 // 03-21-2015			
+					if ($lsc_add_line_breaks==1) {							 
+						$content .= "&nbsp;<br />";
+						$descx = preg_replace('/\./','.<br />&nbsp;<br />', $descx); 	// added line break option 03-21-2015									
+						}
+					$content .= $descx; // 03-21-2015		
 					
 					$opt  = get_option('lsctrib');
 					$lsc_show_user_url = $opt;	// 10-14-2013 ['lsc_show_user_url']
@@ -461,17 +488,17 @@ function list_site_contributors_display() {
 												// authority user - desc not limited for relevanssi shortcode expand option (logout if admin)
 												$descx = strip_tags($desc->meta_value);
 												}
-											$descx = preg_replace('/[^\x0A\x20-\x7E]/','', $descx); 
+											$descx = preg_replace('/[^\x0A\x20-\x7E]/','', $descx); 											
 											$content .= $descx;
 											}
 										else { // default msg
 											$content .= "Author";
 											}
 										}
-								$content .= "&nbsp;<a href=\"".$mypage."?aid=";
+								$content .= "...&nbsp;<a href=\"".$mypage."?aid=";
 								$content .= $author->ID;					
 								$content .= "\">";
-								$content .= "...&nbsp;More&nbsp;&gt;";
+								$content .= "More&nbsp;&gt;";
 								$content .= "</a> "; // $count_authors 
 								$content .= "</div><br />&nbsp;<br />\n";	
 								}	// end okshow

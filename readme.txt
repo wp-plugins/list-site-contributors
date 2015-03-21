@@ -3,7 +3,7 @@ Contributors: mallsop
 Donate link: http://www.mallsop.com/downloads.html
 Tags: contributors, authors, plugins
 Requires at least: 3.1
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ List site contributors and authors.
 
 == Description ==
 
-List site contributors allows you to list your site's contributors and authors. 
+List site contributors allows you list your site's contributors and authors. 
 Just add the shortcode [listsitecontributors] to a page on your blog. 
 Optionally you can use the User Photo Plugin (http://wordpress.org/extend/plugins/user-photo/) for images,  
 otherwise Avatars will be used.
@@ -74,4 +74,7 @@ None.
 = 1.1.5 =
 * Modification: Cleanup options php illegal type warnings.
 = 1.1.6 =
-* Modification: You can now exclude one user by entering the user`s email.
+* Modification: You can now exclude one user by entering the email of that user in the exclude option.
+= 1.1.7 =
+* Modification: Added line break option to make the user description look nice.
+
